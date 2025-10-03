@@ -48,7 +48,7 @@ ik get --key "github"
 
 ---
 
-## 📖 Usage
+## Usage
 
 ### Commands
 
@@ -189,7 +189,7 @@ cargo clippy
 
 ---
 
-## 🧪 Testing
+## Testing
 
 ```bash
 # Run all tests
@@ -243,7 +243,7 @@ echo ~/.config/ironkey/ironkey.json
 
 ---
 
-## Roadmap
+## Plans
 
 ### Completed
 - [x] Core encryption (AES-256-GCM)
@@ -264,7 +264,7 @@ echo ~/.config/ironkey/ironkey.json
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
