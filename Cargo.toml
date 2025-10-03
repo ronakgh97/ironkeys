@@ -18,3 +18,4 @@ base64 = "0.22"
 serde = { version = "1.0", features = ["derive"] }
 figlet-rs = "0.1.5"
 rpassword = "7.3"
+arboard = "3.4.1"
