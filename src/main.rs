@@ -3,6 +3,7 @@ use clap::Parser;
 use figlet_rs::FIGfont;
 
 mod cli;
+mod clipboard;
 mod crypto;
 mod error;
 mod storage;
@@ -21,7 +22,7 @@ fn main() {
         }
         Some(Commands::Init { master }) => handle_init(master),
         Some(Commands::Create { key, value }) => handle_create(key, value),
-        Some(Commands::Get { key }) => handle_get(key),
+        Some(Commands::Get { key, copy }) => handle_get(key, copy),
         Some(Commands::Update { key, value }) => handle_update(key, value),
         Some(Commands::List) => handle_list(),
         Some(Commands::Delete { key }) => handle_delete(key),
@@ -121,12 +122,18 @@ fn handle_create(key: String, value: String) -> Result<()> {
     Ok(())
 }
 
-fn handle_get(key: String) -> Result<()> {
+fn handle_get(key: String, copy: bool) -> Result<()> {
     let password = prompt_password("Enter master password: ")?;
     let vault = Vault::unlock(password)?;
 
     let value = vault.get_entry(&key)?;
-    println!("Value: {value}");
+
+    if copy {
+        clipboard::copy_to_clipboard(&value)?;
+        println!("Value copied to clipboard!");
+    } else {
+        println!("Value: {value}");
+    }
 
     Ok(())
 }

@@ -79,7 +79,7 @@ ik create --key "database" --value "super_secret_db_pass"
 # Retrieve password (displays on screen)
 ik get --key "email"
 
-# Copy password to clipboard (safer - doesn't display)
+# Copy password to clipboard (doesn't display)
 ik get --key "email" --copy
 # ✓ Value copied to clipboard!
 
@@ -258,7 +258,7 @@ echo ~/.config/ironkey/ironkey.json
 - [x] Entry locking mechanism
 - [x] Hidden password input
 - [x] Clean architecture
-- [x] **Clipboard Integration** - Copy passwords to clipboard without displaying
+- [x] Clipboard Integration
 
 - [ ] **Auto-clear Clipboard** - Clear clipboard after N seconds
   - Configurable timeout (default 30 seconds)

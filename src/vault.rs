@@ -218,32 +218,3 @@ impl Drop for Vault {
         self.master_key.zeroize();
     }
 }
-
-#[cfg(test)]
-mod tests {
-    // Note: These tests would require a temporary database location
-    // For now, they're commented out to avoid interfering with the real database
-
-    /*
-    #[test]
-    fn test_vault_init_and_unlock() {
-        let password = "test_password".to_string();
-        let vault = Vault::init(password.clone()).unwrap();
-        drop(vault);
-
-        let vault = Vault::unlock(password).unwrap();
-        assert_eq!(vault.list_entries().len(), 0);
-    }
-
-    #[test]
-    fn test_create_and_get_entry() {
-        let password = "test_password".to_string();
-        let mut vault = Vault::init(password.clone()).unwrap();
-
-        vault.create_entry("test_key".to_string(), "test_value".to_string()).unwrap();
-        let value = vault.get_entry("test_key").unwrap();
-
-        assert_eq!(value, "test_value");
-    }
-    */
-}

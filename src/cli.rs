@@ -37,6 +37,10 @@ pub enum Commands {
         /// Entry name
         #[arg(short, long)]
         key: String,
+
+        /// Copy to clipboard instead of displaying
+        #[arg(short, long, default_value_t = false)]
+        copy: bool,
     },
 
     /// Update an existing entry

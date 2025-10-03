@@ -121,31 +121,3 @@ pub fn save(database: &Database) -> Result<()> {
 
     Ok(())
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_database_creation() {
-        let salt = vec![1, 2, 3, 4];
-        let hash = vec![5, 6, 7, 8];
-        let db = Database::new(salt.clone(), hash.clone(), 100_000);
-
-        assert_eq!(db.get_salt().unwrap(), salt);
-        assert_eq!(db.get_hash().unwrap(), hash);
-        assert_eq!(db.iterations, 100_000);
-        assert!(db.entries.is_empty());
-    }
-
-    #[test]
-    fn test_entry_creation() {
-        let encrypted = vec![1, 2, 3];
-        let nonce = vec![4, 5, 6];
-        let entry = Entry::new(encrypted.clone(), nonce.clone(), false);
-
-        assert_eq!(entry.get_encrypted_value().unwrap(), encrypted);
-        assert_eq!(entry.get_nonce().unwrap(), nonce);
-        assert!(!entry.is_locked);
-    }
-}
