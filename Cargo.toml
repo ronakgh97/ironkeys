@@ -7,6 +7,16 @@ edition = "2024"
 name = "ik"
 path = "src/main.rs"
 
+[profile.release]
+opt-level = 3
+lto = "fat"
+codegen-units = 1
+panic = "abort"
+strip = true
+
+[build]
+rustflags = ["-C", "target-cpu=native"]
+
 [dependencies]
 clap = { version = "4.5.46", features = ["derive"] }
 serde_json = "1.0.145"
@@ -19,3 +29,6 @@ serde = { version = "1.0", features = ["derive"] }
 figlet-rs = "0.1.5"
 rpassword = "7.3"
 arboard = "3.4.1"
+
+[dev-dependencies]
+tempfile = "3.23.0"

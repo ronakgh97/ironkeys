@@ -66,6 +66,9 @@ ik get --key "github"
 | `ik get --copy --no-clear` | Copy without auto-clear | `ik get -k github --copy --no-clear` |
 | `ik update` | Update an existing entry | `ik update -k github -v new_token` |
 | `ik list` | List all entries | `ik list` |
+| `ik list --search <term>` | Search entries (case-insensitive) | `ik list --search "api"` |
+| `ik list --locked` | Show only locked entries | `ik list --locked` |
+| `ik list --unlocked` | Show only unlocked entries | `ik list --unlocked` |
 | `ik lock` | Lock/unlock an entry | `ik lock -k github` |
 | `ik delete` | Delete an entry | `ik delete -k github` |
 | `ik generate` | Generate secure random password | `ik generate --length 20` |
@@ -116,6 +119,30 @@ ik list
 #   - email
 #   - aws
 #   - database [LOCKED]
+
+# Search for entries
+ik list --search "api"
+# Entries matching 'api':
+#   - aws_api_key [LOCKED]
+#   - github_api
+#   - stripe_api_secret
+
+# Show only locked entries
+ik list --locked
+# Stored entries (locked only):
+#   - aws [LOCKED]
+#   - database [LOCKED]
+
+# Show only unlocked entries
+ik list --unlocked
+# Stored entries (unlocked only):
+#   - email
+#   - github_token
+
+# Combine search and filter
+ik list --search "password" --locked
+# Entries matching 'password' (locked only):
+#   - database_password [LOCKED]
 
 # Delete entry
 ik delete --key "email"
@@ -192,8 +219,10 @@ ik generate --length 20 --no-symbols
 - **Crypto** - Pure encryption functions (AES-256-GCM)
 - **Storage** - JSON database persistence
 - **CLI** - User interface via Clap
-
-For detailed code walkthrough, see [`WORKFLOW.md`](WORKFLOW.md).
+- **Clipboard** - Clipboard integration and auto-clear
+- **Password Generator** - Secure random password generation
+- **Entry Locking** - Lock/unlock sensitive entries
+- **Search & Filter** - Find entries with case-insensitive search and lock status filtering
 
 ---
 
@@ -303,13 +332,9 @@ echo ~/.config/ironkey/ironkey.json
 - [x] Clipboard Integration
 - [x] Auto-clear Clipboard
 - [x] Password Generator
+- [x] Search/Filter Entries
 
 ### 🔥 High Priority
-  
-- [ ] **Search/Filter Entries** - Find entries quickly
-  - `ik list --search "github"`
-  - Filter by lock status: `--locked` / `--unlocked`
-  - Case-insensitive matching
 
 - [ ] **Export/Import Functionality** - Backup and migration
   - Export entire vault or specific entries
