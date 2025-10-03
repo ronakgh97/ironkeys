@@ -6,6 +6,7 @@ mod cli;
 mod clipboard;
 mod crypto;
 mod error;
+mod password_generator;
 mod storage;
 mod vault;
 
@@ -32,6 +33,23 @@ fn main() {
         Some(Commands::List) => handle_list(),
         Some(Commands::Delete { key }) => handle_delete(key),
         Some(Commands::Lock { key }) => handle_lock(key),
+        Some(Commands::Generate {
+            length,
+            no_lowercase,
+            no_uppercase,
+            no_numbers,
+            no_symbols,
+            copy,
+            key,
+        }) => handle_generate(
+            length,
+            !no_lowercase,
+            !no_uppercase,
+            !no_numbers,
+            !no_symbols,
+            copy,
+            key,
+        ),
     };
 
     if let Err(e) = result {
@@ -67,7 +85,7 @@ fn show_welcome() {
         }
         Ok(false) => {
             println!("  Vault not initialized");
-            println!("\nik init              Initialize your vault");
+            println!("\n   ik init              Initialize your vault");
         }
         Err(_) => {
             println!("\nAvailable commands:");
@@ -80,6 +98,7 @@ fn show_welcome() {
     println!("   ik list              List all entries");
     println!("   ik delete            Delete an entry");
     println!("   ik lock              Toggle entry lock");
+    println!("   ik generate          Generate a secure password");
     println!("\n📖 Documentation: https://github.com/ronakgh97/ironkeys\n");
 }
 
@@ -197,6 +216,44 @@ fn handle_lock(key: String) -> Result<()> {
     let is_locked = vault.toggle_lock(&key)?;
     let status = if is_locked { "locked" } else { "unlocked" };
     println!("Entry '{key}' {status} successfully!");
+
+    Ok(())
+}
+
+fn handle_generate(
+    length: usize,
+    use_lowercase: bool,
+    use_uppercase: bool,
+    use_numbers: bool,
+    use_symbols: bool,
+    copy: bool,
+    key: Option<String>,
+) -> Result<()> {
+    // Generate password
+    let password = password_generator::generate(
+        length,
+        use_lowercase,
+        use_uppercase,
+        use_numbers,
+        use_symbols,
+    )?;
+
+    // If key option is specified, save to vault
+    if let Some(key_name) = key {
+        let master_password = prompt_password("Enter master password: ")?;
+        let mut vault = Vault::unlock(master_password)?;
+        vault.create_entry(key_name.clone(), password.clone())?;
+        println!("✓ Generated password saved as '{key_name}'");
+    }
+
+    // Handle display/clipboard
+    if copy {
+        clipboard::copy_to_clipboard(&password)?;
+        println!("✓ Generated password copied to clipboard! (auto-clearing in 30s)");
+        clipboard::auto_clear_clipboard(&password, std::time::Duration::from_secs(30))?;
+    } else {
+        println!("Generated password: {password}");
+    }
 
     Ok(())
 }

@@ -78,4 +78,35 @@ pub enum Commands {
         #[arg(short, long)]
         key: String,
     },
+
+    /// Generate a random secure password
+    Generate {
+        /// Length of password (default: 16)
+        #[arg(short, long, default_value_t = 16)]
+        length: usize,
+
+        /// Exclude lowercase letters (a-z)
+        #[arg(long, default_value_t = false)]
+        no_lowercase: bool,
+
+        /// Exclude uppercase letters (A-Z)
+        #[arg(long, default_value_t = false)]
+        no_uppercase: bool,
+
+        /// Exclude numbers (0-9)
+        #[arg(long, default_value_t = false)]
+        no_numbers: bool,
+
+        /// Exclude symbols (!@#$%^&*()_+-=[]{}|;:,.<>?)
+        #[arg(long, default_value_t = false)]
+        no_symbols: bool,
+
+        /// Copy to clipboard instead of displaying
+        #[arg(short, long, default_value_t = false)]
+        copy: bool,
+
+        /// Save to vault with this key name
+        #[arg(short, long)]
+        key: Option<String>,
+    },
 }

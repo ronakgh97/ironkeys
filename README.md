@@ -14,6 +14,7 @@
 - **Entry locking** - Lock sensitive entries for extra protection
 - **Clipboard integration** - Copy passwords without displaying them
 - **Auto-clear clipboard** - Automatic clipboard clearing after timeout (default 30s)
+- **Password generator** - Generate cryptographically secure random passwords
 - **Simple commands** - Intuitive CLI interface
 - **Local storage** - Your data stays on your machine
 
@@ -67,6 +68,8 @@ ik get --key "github"
 | `ik list` | List all entries | `ik list` |
 | `ik lock` | Lock/unlock an entry | `ik lock -k github` |
 | `ik delete` | Delete an entry | `ik delete -k github` |
+| `ik generate` | Generate secure random password | `ik generate --length 20` |
+| `ik generate --key <name>` | Generate and save to vault | `ik generate -k github --copy` |
 
 ### Examples
 
@@ -116,6 +119,34 @@ ik list
 
 # Delete entry
 ik delete --key "email"
+
+# Generate secure password (16 characters, all types)
+ik generate
+# Generated password: aB3$xY9!mN7&qZ2@
+
+# Generate 24-character password
+ik generate --length 24
+# Generated password: kL5#pQ8*rT2@wV6!nM4$gH7&
+
+# Generate and save to vault
+ik generate --key "new-api-key"
+# Enter master password: ********
+# Generated password saved as 'new-api-key'
+# Generated password: xM9!pQ2#rT5$wV8@
+
+# Generate, save, AND copy to clipboard
+ik generate --key "github-token" --copy
+# Enter master password: ********
+# Generated password saved as 'github-token'
+# Generated password copied to clipboard! (auto-clearing in 30s)
+
+# Generate PIN (numbers only)
+ik generate --length 6 --no-lowercase --no-uppercase --no-symbols
+# Generated password: 837492
+
+# Generate alphanumeric password (no symbols)
+ik generate --length 20 --no-symbols
+# Generated password: aB3xY9mN7qZ2wV6knM4p
 ```
 
 ---
@@ -271,11 +302,9 @@ echo ~/.config/ironkey/ironkey.json
 - [x] Clean architecture
 - [x] Clipboard Integration
 - [x] Auto-clear Clipboard
+- [x] Password Generator
 
-- [ ] **Password Generator** - Generate strong random passwords
-  - `ik generate --length 20 --symbols`
-  - Customizable: length, character sets
-  - Option to save directly to vault
+### 🔥 High Priority
   
 - [ ] **Search/Filter Entries** - Find entries quickly
   - `ik list --search "github"`
@@ -320,6 +349,10 @@ echo ~/.config/ironkey/ironkey.json
 - [ ] **Database Encryption at Rest** - Full file encryption
   - Encrypt entire JSON file (not just entries)
   - Transparent decryption on load
+
+- [ ] **Cloud Integration** - Simple user system
+  - Snowflake db cloud to store and manage user data
+  - push cmd to store in db
 
 ---
 

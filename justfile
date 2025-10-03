@@ -28,6 +28,14 @@ test-fast:
 test-clipboard:
     cargo test --test clipboard_tests -- --test-threads=1
 
+# Run clipboard auto-clear tests
+test-autoclear:
+    cargo test --test clipboard_autoclear_tests -- --test-threads=1
+
+# Run password generator tests
+test-generator:
+    cargo test --test password_generator_tests
+
 # Build release version
 build:
     cargo build --release
