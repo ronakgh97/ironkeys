@@ -12,6 +12,7 @@
 - **AES-256-GCM encryption** - Military-grade security
 - **PBKDF2 key derivation** - 100,000 iterations for password hardening
 - **Entry locking** - Lock sensitive entries for extra protection
+- **Clipboard integration** - Copy passwords without displaying them
 - **Simple commands** - Intuitive CLI interface
 - **Local storage** - Your data stays on your machine
 
@@ -58,6 +59,7 @@ ik get --key "github"
 | `ik init` | Initialize vault with master password | `ik init` |
 | `ik create` | Create a new password entry | `ik create -k github -v token123` |
 | `ik get` | Retrieve a password | `ik get -k github` |
+| `ik get --copy` | Copy password to clipboard | `ik get -k github --copy` |
 | `ik update` | Update an existing entry | `ik update -k github -v new_token` |
 | `ik list` | List all entries | `ik list` |
 | `ik lock` | Lock/unlock an entry | `ik lock -k github` |
@@ -74,8 +76,12 @@ ik create --key "email" --value "mypassword123"
 ik create --key "aws" --value "AKIAIOSFODNN7EXAMPLE"
 ik create --key "database" --value "super_secret_db_pass"
 
-# Retrieve password
+# Retrieve password (displays on screen)
 ik get --key "email"
+
+# Copy password to clipboard (safer - doesn't display)
+ik get --key "email" --copy
+# ✓ Value copied to clipboard!
 
 # Update password
 ik update --key "email" --value "new_password456"
@@ -245,22 +251,67 @@ echo ~/.config/ironkey/ironkey.json
 
 ## Plans
 
-### Completed
+### ✅ Completed
 - [x] Core encryption (AES-256-GCM)
 - [x] Master password system
 - [x] CRUD operations (Create, Read, Update, Delete)
 - [x] Entry locking mechanism
 - [x] Hidden password input
 - [x] Clean architecture
+- [x] **Clipboard Integration** - Copy passwords to clipboard without displaying
 
-### Planned
-- [ ] Clipboard integration (copy without displaying)
-- [ ] Password generator
-- [ ] Export/import functionality
-- [ ] Multiple vault support
-- [ ] Password strength meter
-- [ ] Audit logging
-- [ ] Database encryption at rest
+- [ ] **Auto-clear Clipboard** - Clear clipboard after N seconds
+  - Configurable timeout (default 30 seconds)
+  - Option to disable: `--no-clear`
+  
+- [ ] **Password Generator** - Generate strong random passwords
+  - `ik generate --length 20 --symbols`
+  - Customizable: length, character sets
+  - Option to save directly to vault
+  
+- [ ] **Search/Filter Entries** - Find entries quickly
+  - `ik list --search "github"`
+  - Filter by lock status: `--locked` / `--unlocked`
+  - Case-insensitive matching
+
+- [ ] **Export/Import Functionality** - Backup and migration
+  - Export entire vault or specific entries
+  - Import with merge/replace options
+  - Encrypted export format
+  
+- [ ] **Password Strength Indicator** - Validate master password strength
+  - Real-time strength analysis during init
+  - Recommendations for weak passwords
+  - Block very weak passwords
+  
+- [ ] **Auto-lock Timeout** - Security improvement
+  - Keep vault unlocked for specified duration
+  - Auto-clear from memory after timeout
+  - Interactive shell mode
+
+- [ ] **Multiple Vault Support** - Separate personal/work passwords
+  - Named vaults: `--vault personal` / `--vault work`
+  - Set default vault
+  - Easy switching between vaults
+  
+- [ ] **Tags/Categories** - Better organization
+  - Add tags to entries: `--tags "work,api,aws"`
+  - Filter by tag: `ik list --tag "work"`
+  - Multiple tags per entry
+  
+- [ ] **Audit Logging** - Track access history
+  - Log all operations (get, create, update, delete)
+  - View audit trail: `ik audit`
+  - Per-entry history
+  
+- [ ] **TOTP/2FA Support** - Store 2FA tokens
+  - Add TOTP secrets to entries
+  - Generate current TOTP codes
+  - Time-based automatic refresh
+  
+- [ ] **Database Encryption at Rest** - Full file encryption
+  - Encrypt entire JSON file (not just entries)
+  - Transparent decryption on load
 
 ---
 
@@ -275,6 +326,51 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 - Update documentation
 - Run `cargo clippy` and fix warnings
 - Ensure `cargo test` passes
+
+### Running Tests
+
+**⚠️ Important**: Due to clipboard access conflicts, tests must run single-threaded.
+
+#### Using Just (Recommended)
+
+```bash
+# Install just (one time)
+cargo install just
+
+# Run all tests
+just test
+
+# Run specific test file
+just test-file clipboard_tests
+
+# Run fast tests (non-clipboard, parallel)
+just test-fast
+
+# Run all CI checks
+just ci
+
+# See all available commands
+just --list
+```
+
+#### Using Cargo Directly
+
+```bash
+# Run all tests
+cargo test -- --test-threads=1
+
+# Run specific test file
+cargo test --test clipboard_tests -- --test-threads=1
+
+# Run non-clipboard tests (parallel is fine)
+cargo test --test crypto_tests
+cargo test --test storage_tests
+cargo test --test vault_tests
+cargo test --test integration_tests
+```
+
+**Why `--test-threads=1`?**  
+The clipboard tests access the system clipboard, which can only handle one operation at a time. Running tests in parallel causes `STATUS_HEAP_CORRUPTION` errors on Windows.
 
 ---
 
