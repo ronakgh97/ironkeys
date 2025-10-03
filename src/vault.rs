@@ -154,13 +154,48 @@ impl Vault {
         Ok(())
     }
 
-    /// List all entry keys
-    pub fn list_entries(&self) -> Vec<(&String, bool)> {
-        self.db
+    /// List entry keys with optional search and lock status filter
+    ///
+    /// # Arguments
+    /// * `search` - Optional search string (case-insensitive, partial match)
+    /// * `lock_filter` - Optional filter: Some(true) for locked only, Some(false) for unlocked only, None for all
+    ///
+    /// # Returns
+    /// A Result containing a vector of tuples (key, is_locked) sorted alphabetically by key
+    pub fn list_entries(
+        &self,
+        search: Option<&str>,
+        lock_filter: Option<bool>,
+    ) -> Result<Vec<(&String, bool)>> {
+        let mut results: Vec<(&String, bool)> = self
+            .db
             .entries
             .iter()
+            .filter(|(key, entry)| {
+                // Apply search filter (case-insensitive)
+                let search_match = if let Some(search_term) = search {
+                    key.to_lowercase().contains(&search_term.to_lowercase())
+                } else {
+                    true // No search filter, match all
+                };
+
+                // Apply lock status filter
+                let lock_match = if let Some(required_lock_status) = lock_filter {
+                    entry.is_locked == required_lock_status
+                } else {
+                    true // No lock filter, match all
+                };
+
+                // Entry must match both filters
+                search_match && lock_match
+            })
             .map(|(key, entry)| (key, entry.is_locked))
-            .collect()
+            .collect();
+
+        // Sort alphabetically by key
+        results.sort_by(|a, b| a.0.cmp(b.0));
+
+        Ok(results)
     }
 
     /// Delete an entry

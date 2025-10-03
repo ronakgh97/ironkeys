@@ -62,8 +62,20 @@ pub enum Commands {
         value: String,
     },
 
-    /// List all entries
-    List,
+    /// List all entries with optional search and filter
+    List {
+        /// Search for entries by name (case-insensitive, partial match)
+        #[arg(short, long)]
+        search: Option<String>,
+
+        /// Show only locked entries
+        #[arg(long, conflicts_with = "unlocked")]
+        locked: bool,
+
+        /// Show only unlocked entries
+        #[arg(long, conflicts_with = "locked")]
+        unlocked: bool,
+    },
 
     /// Delete an entry
     Delete {

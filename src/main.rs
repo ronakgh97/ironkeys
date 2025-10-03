@@ -30,7 +30,11 @@ fn main() {
             timeout,
         }) => handle_get(key, copy, no_clear, timeout),
         Some(Commands::Update { key, value }) => handle_update(key, value),
-        Some(Commands::List) => handle_list(),
+        Some(Commands::List {
+            search,
+            locked,
+            unlocked,
+        }) => handle_list(search, locked, unlocked),
         Some(Commands::Delete { key }) => handle_delete(key),
         Some(Commands::Lock { key }) => handle_lock(key),
         Some(Commands::Generate {
@@ -180,17 +184,44 @@ fn handle_update(key: String, value: String) -> Result<()> {
     Ok(())
 }
 
-fn handle_list() -> Result<()> {
+fn handle_list(search: Option<String>, locked: bool, unlocked: bool) -> Result<()> {
     let vault = Vault::unlock(prompt_password("Enter master password: ")?)?;
 
-    let entries = vault.list_entries();
+    // Determine lock filter
+    let lock_filter = if locked {
+        Some(true) // Show only locked entries
+    } else if unlocked {
+        Some(false) // Show only unlocked entries
+    } else {
+        None // Show all entries
+    };
+
+    let entries = vault.list_entries(search.as_deref(), lock_filter)?;
 
     if entries.is_empty() {
-        println!("No entries found.");
+        if search.is_some() || locked || unlocked {
+            println!("No matching entries found.");
+        } else {
+            println!("No entries found.");
+        }
         return Ok(());
     }
 
-    println!("Stored entries:");
+    // Print header
+    if let Some(ref search_term) = search {
+        print!("Entries matching '{search_term}'");
+    } else {
+        print!("Stored entries");
+    }
+
+    if locked {
+        print!(" (locked only)");
+    } else if unlocked {
+        print!(" (unlocked only)");
+    }
+    println!(":");
+
+    // Print entries
     for (key, is_locked) in entries {
         let status = if is_locked { " [LOCKED]" } else { "" };
         println!("  - {key}{status}");

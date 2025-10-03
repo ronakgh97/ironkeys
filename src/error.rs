@@ -26,6 +26,9 @@ pub enum Error {
 
     // I/O errors
     Io(String),
+
+    // Input validation errors
+    InvalidInput(String),
 }
 
 impl fmt::Display for Error {
@@ -53,6 +56,7 @@ impl fmt::Display for Error {
             Error::DatabaseSaveFailed(msg) => write!(f, "Failed to save database: {msg}"),
 
             Error::Io(msg) => write!(f, "I/O error: {msg}"),
+            Error::InvalidInput(msg) => write!(f, "Invalid input: {msg}"),
         }
     }
 }
