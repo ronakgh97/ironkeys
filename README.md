@@ -13,6 +13,7 @@
 - **PBKDF2 key derivation** - 100,000 iterations for password hardening
 - **Entry locking** - Lock sensitive entries for extra protection
 - **Clipboard integration** - Copy passwords without displaying them
+- **Auto-clear clipboard** - Automatic clipboard clearing after timeout (default 30s)
 - **Simple commands** - Intuitive CLI interface
 - **Local storage** - Your data stays on your machine
 
@@ -59,7 +60,9 @@ ik get --key "github"
 | `ik init` | Initialize vault with master password | `ik init` |
 | `ik create` | Create a new password entry | `ik create -k github -v token123` |
 | `ik get` | Retrieve a password | `ik get -k github` |
-| `ik get --copy` | Copy password to clipboard | `ik get -k github --copy` |
+| `ik get --copy` | Copy password to clipboard (auto-clears in 30s) | `ik get -k github --copy` |
+| `ik get --copy --timeout 60` | Custom auto-clear timeout | `ik get -k github --copy --timeout 60` |
+| `ik get --copy --no-clear` | Copy without auto-clear | `ik get -k github --copy --no-clear` |
 | `ik update` | Update an existing entry | `ik update -k github -v new_token` |
 | `ik list` | List all entries | `ik list` |
 | `ik lock` | Lock/unlock an entry | `ik lock -k github` |
@@ -81,7 +84,15 @@ ik get --key "email"
 
 # Copy password to clipboard (doesn't display)
 ik get --key "email" --copy
-# ✓ Value copied to clipboard!
+# Value copied to clipboard! (auto-clearing in 30s)
+
+# Copy with custom timeout (60 seconds)
+ik get --key "email" --copy --timeout 60
+# Value copied to clipboard! (auto-clearing in 60s)
+
+# Copy without auto-clear (keeps password in clipboard)
+ik get --key "email" --copy --no-clear
+# Value copied to clipboard!
 
 # Update password
 ik update --key "email" --value "new_password456"
@@ -259,11 +270,8 @@ echo ~/.config/ironkey/ironkey.json
 - [x] Hidden password input
 - [x] Clean architecture
 - [x] Clipboard Integration
+- [x] Auto-clear Clipboard
 
-- [ ] **Auto-clear Clipboard** - Clear clipboard after N seconds
-  - Configurable timeout (default 30 seconds)
-  - Option to disable: `--no-clear`
-  
 - [ ] **Password Generator** - Generate strong random passwords
   - `ik generate --length 20 --symbols`
   - Customizable: length, character sets
