@@ -22,7 +22,12 @@ fn main() {
         }
         Some(Commands::Init { master }) => handle_init(master),
         Some(Commands::Create { key, value }) => handle_create(key, value),
-        Some(Commands::Get { key, copy }) => handle_get(key, copy),
+        Some(Commands::Get {
+            key,
+            copy,
+            no_clear,
+            timeout,
+        }) => handle_get(key, copy, no_clear, timeout),
         Some(Commands::Update { key, value }) => handle_update(key, value),
         Some(Commands::List) => handle_list(),
         Some(Commands::Delete { key }) => handle_delete(key),
@@ -122,7 +127,7 @@ fn handle_create(key: String, value: String) -> Result<()> {
     Ok(())
 }
 
-fn handle_get(key: String, copy: bool) -> Result<()> {
+fn handle_get(key: String, copy: bool, no_clear: bool, timeout: u64) -> Result<()> {
     let password = prompt_password("Enter master password: ")?;
     let vault = Vault::unlock(password)?;
 
@@ -130,7 +135,15 @@ fn handle_get(key: String, copy: bool) -> Result<()> {
 
     if copy {
         clipboard::copy_to_clipboard(&value)?;
-        println!("Value copied to clipboard!");
+
+        if no_clear {
+            println!("✓ Value copied to clipboard!");
+        } else {
+            println!("✓ Value copied to clipboard! (auto-clearing in {timeout}s)");
+
+            // Start auto-clear in background
+            clipboard::auto_clear_clipboard(&value, std::time::Duration::from_secs(timeout))?;
+        }
     } else {
         println!("Value: {value}");
     }

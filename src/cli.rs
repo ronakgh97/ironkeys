@@ -41,6 +41,14 @@ pub enum Commands {
         /// Copy to clipboard instead of displaying
         #[arg(short, long, default_value_t = false)]
         copy: bool,
+
+        /// Disable auto-clear of clipboard (only with --copy)
+        #[arg(long, default_value_t = false)]
+        no_clear: bool,
+
+        /// Timeout in seconds before auto-clearing clipboard (default: 30)
+        #[arg(short, long, default_value_t = 30)]
+        timeout: u64,
     },
 
     /// Update an existing entry

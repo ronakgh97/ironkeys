@@ -46,7 +46,7 @@ fmt-check:
 
 # Run all CI checks locally
 ci: check test fmt-check
-    @echo "✅ All CI checks passed!"
+    @echo "All CI checks passed!"
 
 # Clean build artifacts
 clean:
