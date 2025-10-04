@@ -40,27 +40,27 @@ military-grade encryption (AES-256-GCM).
 
 ### Installation
 
-# Using Cargo (recommended) ✘
+#### Using Cargo (recommended) ✘
 
 ```bash
 rustup update
 cargo install ironkey
 ```
 
-# Scoop (Windows) ✘
+#### Scoop (Windows) ✘
 
 ```powershell
 scoop bucket add extras
 scoop install ironkey
 ```
 
-# Homebrew (macOS/Linux) ✘
+#### Homebrew (macOS/Linux) ✘
 
 ```bash
 brew install ronakgh97/tap/ironkey
 ```
 
-# Or build manually using cargo ✓
+#### Or build manually using cargo ✓
 
 ```bash
 # Clone the repository
@@ -609,7 +609,6 @@ echo ~/.config/ironkey/ironkey.json
         - CLI: `account` and `sync` commands with LWW.
         - Device registration + token storage integration (Windows).
 
----
 
 ## Contributing
 
@@ -632,7 +631,6 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 The clipboard tests access the system clipboard, which can only handle one operation at a time. Running tests in
 parallel causes `STATUS_HEAP_CORRUPTION` errors on damn Windows.
 
----
 
 ## ⚠️ Disclaimer
 
