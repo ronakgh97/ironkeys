@@ -23,7 +23,7 @@ military-grade encryption (AES-256-GCM).
 
 ---
 
-##  New Release: v0.0.2-beta
+## New Release: v0.0.2-beta
 
 ### Export/Import System
 
@@ -36,21 +36,31 @@ military-grade encryption (AES-256-GCM).
 - **Full path display** - Always know exactly where files are saved
 - **Lock preservation** - Locked entries stay locked across export/import
 
-
-```bash
-# Create backup
-ik export --name mybackup
-
-# List all backups
-ik export --list
-
-# Restore backup
-ik import --name mybackup
-```
-
 ---
 
-### Installation (build from source)
+### Installation
+
+# Using Cargo (recommended) ✘
+
+```bash
+rustup update
+cargo install ironkey
+```
+
+# Scoop (Windows) ✘
+
+```powershell
+scoop bucket add extras
+scoop install ironkey
+```
+
+# Homebrew (macOS/Linux) ✘
+
+```bash
+brew install ronakgh97/tap/ironkey
+```
+
+# Or build manually using cargo ✓
 
 ```bash
 # Clone the repository
@@ -58,25 +68,11 @@ git clone https://github.com/ronakgh97/ironkeys.git
 cd ironkey
 
 # Build manually
+rustup update
 cargo build --release
 
 # Install using cargo
 cargo install --path .
-```
-
-### First Time Setup
-
-```bash
-# Initialize your vault
-ik init
-# Enter new master password: ********
-
-# Create your first entry
-ik create --key "github" --value "ghp_your_token_here"
-
-# Retrieve it
-ik get --key "github"
-# Value: ghp_your_token_here
 ```
 
 ---
@@ -277,7 +273,7 @@ ik import --name mybackup --replace
 
 ## Export/Import Guide
 
-### 🔐 Triple-Password Security
+### Triple-Layer Security
 
 Exports use a **separate encryption layer** for maximum security:
 
@@ -330,7 +326,7 @@ ik import --input ./shared_vault.ik
 → Imports from custom location
 ```
 
-###     Security Notes
+### Security Notes
 
 - **Export files are AES-256-GCM encrypted** - Safe to store in cloud (Dropbox, Google Drive)
 - **Unique encryption per export** - Same vault + same password = different encrypted output
@@ -338,7 +334,7 @@ ik import --input ./shared_vault.ik
 - **Use strong export passwords** - Treat export password like master password
 - **Test your exports** - Always verify imports work after creating exports
 
-###     Default Locations
+### Default Locations
 
 - **Exports folder**: `%APPDATA%\ironkey\exports\` (Windows) or `~/.config/ironkey/exports/` (Unix)
 - **Main database**: `%APPDATA%\ironkey\ironkey.json`
@@ -406,27 +402,31 @@ ik import --input ./shared_vault.ik
 
 ### Prerequisites
 
-- Rust 1.70+ (Edition 2024)
+- Rust 1.70+
 - Cargo
 
-### Build from Source
+### Build from Source using `Just` (Recommended for easier life)
+
+[Just Cmds](justfile)
 
 ```bash
+cargo install just  # One-time install
+
 # Clone repository
 git clone https://github.com/ronakgh97/ironkeys.git
 cd ironkey
 
-# Run in development mode
-cargo run
+# Build in release mode
+just build-dev
 
-# Build release version
-cargo build --release
+# Auto-fix lint issues
+just fix
 
-# Run tests
-cargo test
+# Run all tests
+just test
 
-# Check code quality
-cargo clippy
+# Run demo
+just version
 ```
 
 ### Dependencies
@@ -443,13 +443,6 @@ cargo clippy
 - `chrono` - Timestamp handling for exports
 
 ---
-
-## Testing
-
-```bash
-# Run all tests
-just test
-```
 
 Current test coverage:
 
@@ -513,8 +506,8 @@ echo ~/.config/ironkey/ironkey.json
 
 - [x] Core encryption (AES-256-GCM)
 - [x] Master password system
-- [x] CRUD operations (Create, Read, Update, Delete)
-- [x] Entry locking mechanism
+- [x] CRUD operations
+- [x] Entry locking/unlocking mechanism
 - [x] Hidden password input
 - [x] Clean architecture
 - [x] Clipboard Integration
@@ -575,9 +568,46 @@ echo ~/.config/ironkey/ironkey.json
     - Encrypt entire JSON file (not just entries)
     - Transparent decryption on load
 
-- [ ] **Cloud Integration** - Simple user system
-    - Snowflake db cloud to store and manage user data
-    - push cmd to store in db
+- [ ] **Cloud Integration (opt-in, end-to-end encrypted, production)**
+    - Goals
+        - Optional sync across devices
+        - Server never sees plaintext or master password (zero-knowledge).
+    - Security Model
+        - Client-side encryption only: reuse existing AES-256-GCM per-entry.
+        - Derive `Sync Key` from master via PBKDF2 for cloud operations.
+        - Store entry names as `HMAC-SHA256(name, Sync Key)` to hide metadata.
+        - Rotate `Sync Key` via re-derivation when master changes.
+    - Architecture
+        - Introduce minimal REST service (Rust `axum`) as API facade.
+        - Service stores opaque blobs and indexes; all crypto is client-side.
+    - Data Model (server-side, all blobs encrypted)
+        - `users(id, email_hash, created_at)`
+        - `devices(id, user_id, pubkey_fpr, created_at)`
+        - `vaults(id, user_id, version, updated_at)`
+        - `entries(vault_id, key_hmac, blob, lock_flag, version, updated_at)`
+    - API Endpoints
+        - `POST /v1/auth/login` → short-lived JWT (email+TOTP).
+        - `GET /v1/vault/snapshot` → full encrypted snapshot + version.
+        - `POST /v1/vault/sync` → upload deltas, download server deltas.
+        - `POST /v1/devices/register` → pair device (optional).
+    - CLI Additions
+        - `ik account login` \| `logout` \| `status`
+        - `ik sync push` \| `pull` \| `run` (two-way)
+        - `ik sync resolve --strategy lww` (default last-write-wins) \| `--interactive`
+        - Config: token stored securely (Windows Credential Manager) or `%APPDATA%\ironkey\config.json` with OS secret
+          storage preferred.
+    - Sync Semantics
+        - Versioned entries with `updated_at` and monotonic `version`.
+        - Default conflict: last-write-wins; optional interactive resolver.
+        - Batch, idempotent operations; retry-safe; exponential backoff.
+    - Migration/Compatibility
+        - No change to on-disk format; cloud uses the same encrypted entry blobs.
+        - Local-only remains default; cloud is explicit `ik account login`.
+    - Milestones
+        - Client E2EE refactor: add `Sync Key`, HMAC of entry names.
+        - REST service (auth, snapshot, sync) + Postgres schema.
+        - CLI: `account` and `sync` commands with LWW.
+        - Device registration + token storage integration (Windows).
 
 ---
 
@@ -587,47 +617,26 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ### Code Guidelines
 
-- Follow Rust best practices
 - Add tests for new features
 - Update documentation
-- Run `cargo clippy` and fix warnings
-- Ensure `cargo test` passes
+- Use Just for tasks
+- Update Just for new commands
+- Run `just check` and fix warnings
+- Ensure `just test-fast` passes
 
 ### Running Tests
 
 **⚠ Important**: Due to clipboard access conflicts, tests must run single-threaded.
 
-#### Using Just (Recommended)
-
-```bash
-# Install just (one time)
-cargo install just
-
-# Run all tests
-just test
-
-# Run specific test file
-just test-file clipboard_tests
-
-# Run fast tests (non-clipboard, parallel)
-just test-fast
-
-# Run all CI checks
-just ci
-
-# See all available commands
-just --list
-```
-
 **Why `--test-threads=1`?**  
 The clipboard tests access the system clipboard, which can only handle one operation at a time. Running tests in
-parallel causes `STATUS_HEAP_CORRUPTION` errors on Windows.
+parallel causes `STATUS_HEAP_CORRUPTION` errors on damn Windows.
 
 ---
 
 ## ⚠️ Disclaimer
 
-This is a beta version (v0.0.2-beta). While it uses industry-standard encryption, use at your own risk. Always backup
+This is a beta version (v0.0.2-beta). While it uses Good-standard encryption, use at your own risk. Always backup
 your vault using the export feature.
 (Of course, there is no httpclient code that would let me track you, but still be cautious. 🔪)
 
