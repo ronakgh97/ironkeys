@@ -23,6 +23,11 @@ test-fast:
     cargo test --test storage_tests
     cargo test --test vault_tests
     cargo test --test integration_tests
+    cargo test --test password_generator_tests
+    cargo test --test search_filter_tests
+    cargo test --test export_tests
+    cargo test --test import_tests
+    cargo test --test export_import_roundtrip_tests
 
 # Run clipboard tests specifically
 test-clipboard:
@@ -59,6 +64,13 @@ ci: check test fmt-check
 # Clean build artifacts
 clean:
     cargo clean
+
+# Clean and do a fresh install
+clean-install:
+    cargo clean
+    cargo uninstall ironkey
+    cargo build --release
+    cargo install --path .
 
 # Run the binary
 run *ARGS:
