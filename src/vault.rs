@@ -245,6 +245,85 @@ impl Vault {
     pub fn save(&self) -> Result<()> {
         storage::save(&self.db)
     }
+
+    /// Export vault to encrypted file
+    ///
+    /// # Arguments
+    /// * `output_path` - Path where export file will be written
+    /// * `export_password` - Password to encrypt the export file (separate from master password)
+    ///
+    /// # Errors
+    /// Returns error if file already exists (use export_to_file_force to overwrite)
+    pub fn export_to_file(
+        &self,
+        output_path: &std::path::Path,
+        export_password: String,
+    ) -> Result<()> {
+        crate::export::export_vault(
+            &self.db,
+            &self.master_key,
+            output_path,
+            export_password,
+            false,
+        )
+    }
+
+    /// Export vault to encrypted file (force overwrite if exists)
+    ///
+    /// # Arguments
+    /// * `output_path` - Path where export file will be written
+    /// * `export_password` - Password to encrypt the export file
+    pub fn export_to_file_force(
+        &self,
+        output_path: &std::path::Path,
+        export_password: String,
+    ) -> Result<()> {
+        crate::export::export_vault(
+            &self.db,
+            &self.master_key,
+            output_path,
+            export_password,
+            true,
+        )
+    }
+
+    /// Import vault entries from encrypted .ik file
+    ///
+    /// # Arguments
+    /// * `import_path` - Path to the .ik file to import
+    /// * `import_password` - Password used to encrypt the export file
+    /// * `merge` - If true, add new entries but skip existing ones (default)
+    /// * `replace` - If true, overwrite existing entries with imported ones
+    /// * `diff` - If true, dry-run mode (show what would be imported without making changes)
+    ///
+    /// # Returns
+    /// * `Ok(ImportResult)` - Information about what was imported
+    /// * `Err(Error)` - If import fails
+    pub fn import_from_file(
+        &mut self,
+        import_path: &std::path::Path,
+        import_password: String,
+        merge: bool,
+        replace: bool,
+        diff: bool,
+    ) -> Result<crate::import::ImportResult> {
+        let result = crate::import::import_vault(
+            import_path,
+            import_password,
+            &mut self.db,
+            &self.master_key,
+            merge,
+            replace,
+            diff,
+        )?;
+
+        // Save the updated database (unless in diff mode)
+        if !diff {
+            self.save()?;
+        }
+
+        Ok(result)
+    }
 }
 
 impl Drop for Vault {

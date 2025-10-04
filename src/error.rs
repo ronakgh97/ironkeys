@@ -38,25 +38,25 @@ impl fmt::Display for Error {
             Error::EntryAlreadyExists(key) => write!(f, "Entry '{key}' already exists"),
             Error::EntryLocked(key) => write!(f, "Entry '{key}' is locked"),
 
-            Error::InvalidMasterPassword => write!(f, "Invalid master password"),
+            Error::InvalidMasterPassword => write!(f, "◆ Invalid master password"),
             Error::MasterKeyNotInitialized => {
-                write!(f, "Master key not initialized. Run 'ik init' first")
+                write!(f, "✦ Master key not initialized. Run 'ik init' first")
             }
             Error::MasterKeyAlreadyExists => {
-                write!(f, "Master key already exists. Use 'ik init' to verify")
+                write!(f, "✦ Master key already exists. Use 'ik init' to verify")
             }
-            Error::EmptyPassword => write!(f, "Password cannot be empty"),
+            Error::EmptyPassword => write!(f, "◆ Password cannot be empty"),
 
-            Error::EncryptionFailed(msg) => write!(f, "Encryption failed: {msg}"),
-            Error::DecryptionFailed(msg) => write!(f, "Decryption failed: {msg}"),
-            Error::KeyDerivationFailed(msg) => write!(f, "Key derivation failed: {msg}"),
+            Error::EncryptionFailed(msg) => write!(f, "◆ Encryption failed: {msg}"),
+            Error::DecryptionFailed(msg) => write!(f, "◆ Decryption failed: {msg}"),
+            Error::KeyDerivationFailed(msg) => write!(f, "◆ Key derivation failed: {msg}"),
 
-            Error::DatabaseNotFound => write!(f, "Database not found. Run 'ik init' first"),
-            Error::DatabaseLoadFailed(msg) => write!(f, "Failed to load database: {msg}"),
-            Error::DatabaseSaveFailed(msg) => write!(f, "Failed to save database: {msg}"),
+            Error::DatabaseNotFound => write!(f, "◆ Database not found. Run 'ik init' first"),
+            Error::DatabaseLoadFailed(msg) => write!(f, "◆ Failed to load database: {msg}"),
+            Error::DatabaseSaveFailed(msg) => write!(f, "◆ Failed to save database: {msg}"),
 
             Error::Io(msg) => write!(f, "I/O error: {msg}"),
-            Error::InvalidInput(msg) => write!(f, "Invalid input: {msg}"),
+            Error::InvalidInput(msg) => write!(f, "◆ Invalid input: {msg}"),
         }
     }
 }
