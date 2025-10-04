@@ -2,6 +2,9 @@
 name = "ironkey"
 version = "0.0.2-beta"
 edition = "2024"
+authors = ["Ronak - ronakgh97@gmail.com"]
+description = "IronKey - A Rust-based secret key manager"
+repository = "https://github.com/ronakgh97/ironkeys"
 
 [[bin]]
 name = "ik"
