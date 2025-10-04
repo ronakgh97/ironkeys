@@ -1,22 +1,52 @@
-#   🔐 IronKey
+# 🔐 IronKey
 
 [![Rust](https://img.shields.io/badge/rust-2024-orange.svg)](https://www.rust-lang.org/)
-[![Version](https://img.shields.io/badge/version-0.0.1--beta-green.svg)](https://github.com/ronakgh97/ironkeys)
+[![Version](https://img.shields.io/badge/version-0.0.2--beta-green.svg)](https://github.com/ronakgh97/ironkeys)
 
-**IronKey** is a fast, simple, and secure command-line password manager that stores your secrets locally using military-grade encryption (AES-256-GCM).
+**IronKey** is a fast, simple, and secure command-line password manager that stores your secrets locally using
+military-grade encryption (AES-256-GCM).
 
 ---
 
-##  Features
+## Features
 
 - **AES-256-GCM encryption** - Military-grade security
 - **PBKDF2 key derivation** - 100,000 iterations for password hardening
+- **Export/Import** - Backup and restore your vault with triple-password security
 - **Entry locking** - Lock sensitive entries for extra protection
 - **Clipboard integration** - Copy passwords without displaying them
 - **Auto-clear clipboard** - Automatic clipboard clearing after timeout (default 30s)
 - **Password generator** - Generate cryptographically secure random passwords
+- **Search & Filter** - Find entries quickly with case-insensitive search
 - **Simple commands** - Intuitive CLI interface
 - **Local storage** - Your data stays on your machine
+
+---
+
+##  New Release: v0.0.2-beta
+
+### Export/Import System
+
+- **Backup your vault** - Create encrypted backups with `ik export`
+- **Triple-password security** - Separate encryption layer for exports
+- **Smart import modes** - Merge, replace, or preview (diff) before importing
+- **Default exports folder** - Centralized backup storage at `%APPDATA%\ironkey\exports\`
+- **Auto-generated names** - Timestamp-based names for quick backups
+- **List backups** - See all your exports with `ik export --list`
+- **Full path display** - Always know exactly where files are saved
+- **Lock preservation** - Locked entries stay locked across export/import
+
+
+```bash
+# Create backup
+ik export --name mybackup
+
+# List all backups
+ik export --list
+
+# Restore backup
+ik import --name mybackup
+```
 
 ---
 
@@ -55,24 +85,27 @@ ik get --key "github"
 
 ### Commands
 
-| Command | Description | Example |
-|---------|-------------|---------|
-| `ik` | Show welcome screen with status | `ik` |
-| `ik init` | Initialize vault with master password | `ik init` |
-| `ik create` | Create a new password entry | `ik create -k github -v token123` |
-| `ik get` | Retrieve a password | `ik get -k github` |
-| `ik get --copy` | Copy password to clipboard (auto-clears in 30s) | `ik get -k github --copy` |
-| `ik get --copy --timeout 60` | Custom auto-clear timeout | `ik get -k github --copy --timeout 60` |
-| `ik get --copy --no-clear` | Copy without auto-clear | `ik get -k github --copy --no-clear` |
-| `ik update` | Update an existing entry | `ik update -k github -v new_token` |
-| `ik list` | List all entries | `ik list` |
-| `ik list --search <term>` | Search entries (case-insensitive) | `ik list --search "api"` |
-| `ik list --locked` | Show only locked entries | `ik list --locked` |
-| `ik list --unlocked` | Show only unlocked entries | `ik list --unlocked` |
-| `ik lock` | Lock/unlock an entry | `ik lock -k github` |
-| `ik delete` | Delete an entry | `ik delete -k github` |
-| `ik generate` | Generate secure random password | `ik generate --length 20` |
-| `ik generate --key <name>` | Generate and save to vault | `ik generate -k github --copy` |
+| Command                      | Description                                     | Example                                |
+|------------------------------|-------------------------------------------------|----------------------------------------|
+| `ik`                         | Show welcome screen with status                 | `ik`                                   |
+| `ik init`                    | Initialize vault with master password           | `ik init`                              |
+| `ik create`                  | Create a new password entry                     | `ik create -k github -v token123`      |
+| `ik get`                     | Retrieve a password                             | `ik get -k github`                     |
+| `ik get --copy`              | Copy password to clipboard (auto-clears in 30s) | `ik get -k github --copy`              |
+| `ik get --copy --timeout 60` | Custom auto-clear timeout                       | `ik get -k github --copy --timeout 60` |
+| `ik get --copy --no-clear`   | Copy without auto-clear                         | `ik get -k github --copy --no-clear`   |
+| `ik update`                  | Update an existing entry                        | `ik update -k github -v new_token`     |
+| `ik list`                    | List all entries                                | `ik list`                              |
+| `ik list --search <term>`    | Search entries (case-insensitive)               | `ik list --search "api"`               |
+| `ik list --locked`           | Show only locked entries                        | `ik list --locked`                     |
+| `ik list --unlocked`         | Show only unlocked entries                      | `ik list --unlocked`                   |
+| `ik lock`                    | Lock/unlock an entry                            | `ik lock -k github`                    |
+| `ik delete`                  | Delete an entry                                 | `ik delete -k github`                  |
+| `ik generate`                | Generate secure random password                 | `ik generate --length 20`              |
+| `ik generate --key <name>`   | Generate and save to vault                      | `ik generate -k github --copy`         |
+| `ik export`                  | Export vault to encrypted backup                | `ik export --name mybackup`            |
+| `ik export --list`           | List all available backups                      | `ik export --list`                     |
+| `ik import`                  | Import vault from backup                        | `ik import --name mybackup`            |
 
 ### Examples
 
@@ -147,34 +180,168 @@ ik list --search "password" --locked
 # Delete entry
 ik delete --key "email"
 
-# Generate secure password (16 characters, all types)
+# ✓ Generate secure password (16 characters, all types)
 ik generate
-# Generated password: aB3$xY9!mN7&qZ2@
+# ✓ Generated password: aB3$xY9!mN7&qZ2@
 
-# Generate 24-character password
+# ✓ Generate 24-character password
 ik generate --length 24
-# Generated password: kL5#pQ8*rT2@wV6!nM4$gH7&
+# ✓ Generated password: kL5#pQ8*rT2@wV6!nM4$gH7&
 
 # Generate and save to vault
 ik generate --key "new-api-key"
 # Enter master password: ********
-# Generated password saved as 'new-api-key'
-# Generated password: xM9!pQ2#rT5$wV8@
+# ✓ Generated password saved as 'new-api-key'
+# ✓ Generated password: xM9!pQ2#rT5$wV8@
 
 # Generate, save, AND copy to clipboard
 ik generate --key "github-token" --copy
 # Enter master password: ********
-# Generated password saved as 'github-token'
-# Generated password copied to clipboard! (auto-clearing in 30s)
+# ✓ Generated password saved as 'github-token'
+# ✓ Generated password copied to clipboard! (auto-clearing in 30s)
 
 # Generate PIN (numbers only)
 ik generate --length 6 --no-lowercase --no-uppercase --no-symbols
-# Generated password: 837492
+# ✓ Generated password: 837492
 
 # Generate alphanumeric password (no symbols)
 ik generate --length 20 --no-symbols
-# Generated password: aB3xY9mN7qZ2wV6knM4p
+# ✓ Generated password: aB3xY9mN7qZ2wV6knM4p
+
+# Export your vault
+ik export --name mybackup
+# Enter master password: ********
+# Enter export password: ********
+# Confirm export password: ********
+# ✓ Exported 5 entries to 'C:\Users\...\AppData\Roaming\ironkey\exports\mybackup.ik'
+
+# Export with auto-generated timestamp name
+ik export
+# ✓ Exported 5 entries to '...\exports\vault_2025-10-04_14-30-45.ik'
+
+# Export to custom location
+ik export --output C:/backups/vault_backup
+# ✓ Exported 5 entries to 'C:\backups\vault_backup.ik'
+
+# List all backups
+ik export --list
+# 📦 Available Exports (in C:\Users\...\AppData\Roaming\ironkey\exports):
+#
+#   1. vault_2025-10-04_14-30-45.ik    (125 KB)  2 hours ago
+#   2. mybackup.ik                      (98 KB)   yesterday
+#
+#   Total: 2 exports (223 KB)
+
+# Import from backup (by name)
+ik import --name mybackup
+# Enter master password: ********
+# Enter import password: ********
+# ✓ Import completed successfully!
+#   Total entries in export file: 5
+#
+#   Added 3 new entries:
+#     + aws
+#     + github
+#     + database
+
+# Import from custom location
+ik import --input C:/backups/vault_backup.ik
+
+# Preview import without applying (dry-run)
+ik import --name mybackup --diff
+# Preview (no changes made):
+#   Total entries in export file: 5
+#
+#   Would add 3 new entries:
+#     + aws
+#     + github
+#     + database
+#
+#   Would skip 2 existing entries:
+#     - email
+#     - stripe
+#
+# ✦    Run without --diff to apply changes
+
+# Import with replace mode (overwrites existing)
+ik import --name mybackup --replace
+# ⚠  WARNING: Replace mode will OVERWRITE existing entries!
+# Type 'yes' to confirm: yes
+# ✓ Import completed successfully!
+#   Updated 2 existing entries:
+#     ↻ email
+#     ↻ github
 ```
+
+---
+
+## Export/Import Guide
+
+### 🔐 Triple-Password Security
+
+Exports use a **separate encryption layer** for maximum security:
+
+1. **Master Password** - Unlocks your vault
+2. **Export Password** - Encrypts the export file
+3. **Import Password** - Decrypts the export file (same as export password)
+4. **Destination Master** - Unlocks destination vault (can be different!)
+
+### 📤 Export Workflows
+
+```bash
+# Quick daily backup (auto-named with timestamp)
+ik export
+→ Creates: vault_2025-10-04_14-30-45.ik in default folder
+
+# Named backup for easy import
+ik export --name weekly_backup
+→ Creates: weekly_backup.ik in default folder
+
+# Export to USB drive
+ik export --output E:/backups/vault
+→ Creates: E:\backups\vault.ik
+
+# Force overwrite existing backup
+ik export --name backup --force
+→ Overwrites existing backup.ik without error
+
+# Check all your backups
+ik export --list
+→ Shows all .ik files with sizes and timestamps
+```
+
+### 📥 Import Workflows
+
+```bash
+# Restore from backup (merge mode - default)
+ik import --name weekly_backup
+→ Adds new entries, keeps existing ones
+
+# Replace mode (overwrites existing entries)
+ik import --name weekly_backup --replace
+→ Updates existing entries with imported versions
+
+# Preview before importing (dry-run)
+ik import --name weekly_backup --diff
+→ Shows what would change without applying
+
+# Import from external file
+ik import --input ./shared_vault.ik
+→ Imports from custom location
+```
+
+###     Security Notes
+
+- **Export files are AES-256-GCM encrypted** - Safe to store in cloud (Dropbox, Google Drive)
+- **Unique encryption per export** - Same vault + same password = different encrypted output
+- **Lock status preserved** - Locked entries stay locked across export/import
+- **Use strong export passwords** - Treat export password like master password
+- **Test your exports** - Always verify imports work after creating exports
+
+###     Default Locations
+
+- **Exports folder**: `%APPDATA%\ironkey\exports\` (Windows) or `~/.config/ironkey/exports/` (Unix)
+- **Main database**: `%APPDATA%\ironkey\ironkey.json`
 
 ---
 
@@ -190,19 +357,27 @@ ik generate --length 20 --no-symbols
 ### What's Encrypted?
 
 **Encrypted:**
+
 - All password values
 - Entry data
 
 **Not Encrypted:**
+
 - Entry keys (names)
 - Lock status flags
 - Database structure
 
 ### Where is Data Stored?
 
-- **Windows**: `%APPDATA%\ironkey\ironkey.json`
-- **Linux**: `~/.config/ironkey/ironkey.json`
-- **macOS**: `~/Library/Application Support/ironkey/ironkey.json`
+- **Main Database**:
+    - **Windows**: `%APPDATA%\ironkey\ironkey.json`
+    - **Linux**: `~/.config/ironkey/ironkey.json`
+    - **macOS**: `~/Library/Application Support/ironkey/ironkey.json`
+
+- **Export Backups**:
+    - **Windows**: `%APPDATA%\ironkey\exports\`
+    - **Linux**: `~/.config/ironkey/exports/`
+    - **macOS**: `~/Library/Application Support/ironkey/exports/`
 
 ### Security Notes
 
@@ -221,6 +396,7 @@ ik generate --length 20 --no-symbols
 - **CLI** - User interface via Clap
 - **Clipboard** - Clipboard integration and auto-clear
 - **Password Generator** - Secure random password generation
+- **Export/Import** - Vault backup and migration with triple-password security
 - **Entry Locking** - Lock/unlock sensitive entries
 - **Search & Filter** - Find entries with case-insensitive search and lock status filtering
 
@@ -263,6 +439,8 @@ cargo clippy
 - `zeroize` - Secure memory cleanup
 - `rpassword` - Hidden password input
 - `figlet-rs` - ASCII art
+- `arboard` - Clipboard integration
+- `chrono` - Timestamp handling for exports
 
 ---
 
@@ -270,15 +448,22 @@ cargo clippy
 
 ```bash
 # Run all tests
-cargo test
+just test
 ```
 
 Current test coverage:
-- ✅ Encryption/decryption roundtrip
-- ✅ Password verification
-- ✅ Nonce uniqueness
-- ✅ Database creation
-- ✅ Entry serialization
+
+- ✓ Encryption/decryption roundtrip
+- ✓ Password verification
+- ✓ Nonce uniqueness
+- ✓ Database creation
+- ✓ Entry serialization
+- ✓ Export/Import functionality
+- ✓ Round-trip data integrity
+- ✓ Clipboard operations
+- ✓ Password generation
+- ✓ Search and filtering
+- ✓ Export and import edge cases
 
 ---
 
@@ -289,6 +474,7 @@ Current test coverage:
 **Problem:** You haven't initialized the vault yet.
 
 **Solution:**
+
 ```bash
 ik init
 ```
@@ -304,6 +490,7 @@ ik init
 **Problem:** Entry is locked and needs to be unlocked.
 
 **Solution:**
+
 ```bash
 ik lock --key "entry_name"  # Unlocks it
 ```
@@ -322,7 +509,8 @@ echo ~/.config/ironkey/ironkey.json
 
 ## Plans
 
-### ✅ Completed
+### ✓ Completed
+
 - [x] Core encryption (AES-256-GCM)
 - [x] Master password system
 - [x] CRUD operations (Create, Read, Update, Delete)
@@ -333,51 +521,63 @@ echo ~/.config/ironkey/ironkey.json
 - [x] Auto-clear Clipboard
 - [x] Password Generator
 - [x] Search/Filter Entries
+- [x] **Export/Import Functionality** - Backup and migration
+    - [x] Export entire vault with separate encryption
+    - [x] Import with merge/replace/diff modes
+    - [x] Default exports directory with auto-naming
+    - [x] List all backups command
+    - [x] Triple-password security architecture
+    - [x] Lock status preservation across export/import
 
-### 🔥 High Priority
-
-- [ ] **Export/Import Functionality** - Backup and migration
-  - Export entire vault or specific entries
-  - Import with merge/replace options
-  - Encrypted export format
-  
 - [ ] **Password Strength Indicator** - Validate master password strength
-  - Real-time strength analysis during init
-  - Recommendations for weak passwords
-  - Block very weak passwords
-  
+    - Real-time strength analysis during init
+    - Recommendations for weak passwords
+    - Block very weak passwords
+
+- [ ] **Session Unlock Mode** - Cache password temporarily
+    - `ik unlock` - Unlock vault for 5 minutes
+    - No password prompt for list/get during session
+    - Auto-lock after timeout or manual `ik lock`
+    - Security: Encrypted in-memory storage
+
+- [ ] **Batch Entry Creation** - Create multiple entries efficiently
+    - Interactive batch mode: Enter multiple entries in one session
+    - Prompt once for master password
+    - Add entries until Ctrl+C or empty input
+    - UX: `ik create --batch` starts interactive mode
+
 - [ ] **Auto-lock Timeout** - Security improvement
-  - Keep vault unlocked for specified duration
-  - Auto-clear from memory after timeout
-  - Interactive shell mode
+    - Keep vault unlocked for specified duration
+    - Auto-clear from memory after timeout
+    - Interactive shell mode
 
 - [ ] **Multiple Vault Support** - Separate personal/work passwords
-  - Named vaults: `--vault personal` / `--vault work`
-  - Set default vault
-  - Easy switching between vaults
-  
+    - Named vaults: `--vault personal` / `--vault work`
+    - Set default vault
+    - Easy switching between vaults
+
 - [ ] **Tags/Categories** - Better organization
-  - Add tags to entries: `--tags "work,api,aws"`
-  - Filter by tag: `ik list --tag "work"`
-  - Multiple tags per entry
-  
+    - Add tags to entries: `--tags "work,api,aws"`
+    - Filter by tag: `ik list --tag "work"`
+    - Multiple tags per entry
+
 - [ ] **Audit Logging** - Track access history
-  - Log all operations (get, create, update, delete)
-  - View audit trail: `ik audit`
-  - Per-entry history
-  
+    - Log all operations (get, create, update, delete)
+    - View audit trail: `ik audit`
+    - Per-entry history
+
 - [ ] **TOTP/2FA Support** - Store 2FA tokens
-  - Add TOTP secrets to entries
-  - Generate current TOTP codes
-  - Time-based automatic refresh
-  
+    - Add TOTP secrets to entries
+    - Generate current TOTP codes
+    - Time-based automatic refresh
+
 - [ ] **Database Encryption at Rest** - Full file encryption
-  - Encrypt entire JSON file (not just entries)
-  - Transparent decryption on load
+    - Encrypt entire JSON file (not just entries)
+    - Transparent decryption on load
 
 - [ ] **Cloud Integration** - Simple user system
-  - Snowflake db cloud to store and manage user data
-  - push cmd to store in db
+    - Snowflake db cloud to store and manage user data
+    - push cmd to store in db
 
 ---
 
@@ -395,7 +595,7 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ### Running Tests
 
-**⚠️ Important**: Due to clipboard access conflicts, tests must run single-threaded.
+**⚠ Important**: Due to clipboard access conflicts, tests must run single-threaded.
 
 #### Using Just (Recommended)
 
@@ -419,30 +619,16 @@ just ci
 just --list
 ```
 
-#### Using Cargo Directly
-
-```bash
-# Run all tests
-cargo test -- --test-threads=1
-
-# Run specific test file
-cargo test --test clipboard_tests -- --test-threads=1
-
-# Run non-clipboard tests (parallel is fine)
-cargo test --test crypto_tests
-cargo test --test storage_tests
-cargo test --test vault_tests
-cargo test --test integration_tests
-```
-
 **Why `--test-threads=1`?**  
-The clipboard tests access the system clipboard, which can only handle one operation at a time. Running tests in parallel causes `STATUS_HEAP_CORRUPTION` errors on Windows.
+The clipboard tests access the system clipboard, which can only handle one operation at a time. Running tests in
+parallel causes `STATUS_HEAP_CORRUPTION` errors on Windows.
 
 ---
 
 ## ⚠️ Disclaimer
 
-This is a beta version (v0.0.1-beta). While it uses industry-standard encryption, use at your own risk. Always backup your key file.
-(Ofcourse, there is no httpclient code, that would let me track you, but still, be cautious. 🔪)
+This is a beta version (v0.0.2-beta). While it uses industry-standard encryption, use at your own risk. Always backup
+your vault using the export feature.
+(Of course, there is no httpclient code that would let me track you, but still be cautious. 🔪)
 
 ---
