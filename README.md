@@ -47,10 +47,11 @@ rustup update
 cargo install ironkey
 ```
 
-#### Scoop (Windows) ✘
+#### Scoop (Windows) ✓
 
 ```powershell
-scoop bucket add extras
+scoop update
+scoop bucket add ironkey https://github.com/ronakgh97/scoop-buckets
 scoop install ironkey
 ```
 
