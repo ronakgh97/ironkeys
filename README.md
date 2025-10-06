@@ -6,38 +6,6 @@
 **IronKey** is a fast, simple, and secure command-line password manager that stores your secrets locally using
 military-grade encryption (AES-256-GCM).
 
----
-
-## Features
-
-- **AES-256-GCM encryption** - Military-grade security
-- **PBKDF2 key derivation** - 100,000 iterations for password hardening
-- **Export/Import** - Backup and restore your vault with triple-password security
-- **Entry locking** - Lock sensitive entries for extra protection
-- **Clipboard integration** - Copy passwords without displaying them
-- **Auto-clear clipboard** - Automatic clipboard clearing after timeout (default 30s)
-- **Password generator** - Generate cryptographically secure random passwords
-- **Search & Filter** - Find entries quickly with case-insensitive search
-- **Simple commands** - Intuitive CLI interface
-- **Local storage** - Your data stays on your machine
-
----
-
-## New Release: v0.0.2-beta
-
-### Export/Import System
-
-- **Backup your vault** - Create encrypted backups with `ik export`
-- **Triple-password security** - Separate encryption layer for exports
-- **Smart import modes** - Merge, replace, or preview (diff) before importing
-- **Default exports folder** - Centralized backup storage at `%APPDATA%\ironkey\exports\`
-- **Auto-generated names** - Timestamp-based names for quick backups
-- **List backups** - See all your exports with `ik export --list`
-- **Full path display** - Always know exactly where files are saved
-- **Lock preservation** - Locked entries stay locked across export/import
-
----
-
 ### Installation
 
 #### Using Cargo (recommended) ✘
@@ -276,7 +244,7 @@ ik import --name mybackup --replace
 
 ### Triple-Layer Security
 
-Exports use a **separate encryption layer** for maximum security:
+Exports use a **separate encryption layer** for security:
 
 1. **Master Password** - Unlocks your vault
 2. **Export Password** - Encrypts the export file
